@@ -212,6 +212,7 @@ class ExerciseDetector:
         current_action = ''
 
         # Rep counter logic variables
+        global curl_counter, press_counter, squat_counter, curl_stage, press_stage, squat_stage
         curl_counter = 0
         press_counter = 0
         squat_counter = 0
