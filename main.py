@@ -14,14 +14,9 @@ if __name__ == '__main__':
     rospy.init_node('juno_bot')
     rate = rospy.Rate(10)
     rospy.loginfo("juno_bot node started")
-    cap = cv2.VideoCapture(0)
-    while not rospy.is_shutdown():
-        ret, frame = cap.read()
-        cv2.imshow('frame', frame)
-        cv2.waitKey(1)
-        rate.sleep()
-    cap.release()
-    cv2.destroyAllWindows()
+
+    main()
+    
     rospy.loginfo("juno_bot node terminated")
 
 
