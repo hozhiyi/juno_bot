@@ -4,32 +4,37 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
-
-class CameraNode:
-    def __init__(self):
-        rospy.init_node('camera_node', anonymous=True)
-        self.pub = rospy.Publisher("/camera/image_raw", Image, queue_size=10)
-        self.cap = cv2.VideoCapture(4)
-        self.bridge = CvBridge()
-        self.rate = rospy.Rate(30)  # Set the desired frame rate
-
-    def capture_frames(self):
-        while not rospy.is_shutdown():
-            ret, frame = self.cap.read()
-
-            if ret:
-                image_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
-                self.pub.publish(image_msg)
-
-            self.rate.sleep()
-
-    def release_camera(self):
-        if self.cap is not None:
-            self.cap.release()
+       
 
 if __name__ == '__main__':
-    camera_node = CameraNode()
+    
+    rospy.init_node('camera_node', anonymous=True)
+    pub = rospy.Publisher("/camera/image_raw", Image, queue_size=10)
+    # 0 is laptop camera
+    # 2 is juno camera
+    camera_resource = 2
+    print(f"Trying to open resource: {camera_resource}")
+    cap = cv2.VideoCapture(camera_resource)
+    bridge = CvBridge()
+    rate = rospy.Rate(2)  # Set the desired frame rate
+
+    if not cap.isOpened():
+        print("Error opening resource: " + str(camera_resource))
+        print("Maybe opencv VideoCapture can't open it")
+        exit(0)
+    
+    print("Correctly opened resource, starting to show feed.")
     try:
-        camera_node.capture_frames()
+        while not rospy.is_shutdown():
+            ret, frame = cap.read()
+
+            if ret:
+                image_msg = bridge.cv2_to_imgmsg(frame, "bgr8")
+                pub.publish(image_msg)
+
+            rate.sleep()
     finally:
-        camera_node.release_camera()
+        if cap is not None:
+            cap.release()
+
+    rospy.loginfo("Node was stopped")
