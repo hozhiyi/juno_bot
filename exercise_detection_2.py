@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np
 import os
 import tensorflow as tf
@@ -6,23 +8,31 @@ import mediapipe as mp
 import math
 from threading import Thread
 
+
+
 import rospy
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
+from cv_bridge import CvBridge,CvBridgeError
 import cv2
 from std_msgs.msg import Int32
 
-class ExerciseDetector:
-    def __init__(self, model_path):
+class ExerciseDetector2:
+    def __init__(self,model_path):
         # Initialize the ROS node
-        rospy.init_node('exercise_detection', anonymous=True)
+        print('** initialized')
+
+        rospy.init_node('exercise_detection')
+        rospy.loginfo('hi')
+
+        print('** initialized rospy')
 
         # Create publishers for the counter values
         self.curl_counter_pub = rospy.Publisher('/exercise_counters/curl', Int32, queue_size=10)
         self.press_counter_pub = rospy.Publisher('/exercise_counters/press', Int32, queue_size=10)
         self.squat_counter_pub = rospy.Publisher('/exercise_counters/squat', Int32, queue_size=10)
-
+        
         self.model = tf.keras.models.load_model(model_path)
+        print('** loaded model')
 
         # Pre-trained pose estimation model from Google Mediapipe
         self.mp_pose = mp.solutions.pose
@@ -30,6 +40,13 @@ class ExerciseDetector:
         self.mp_drawing = mp.solutions.drawing_utils
             # Colors associated with each exercise (e.g., curls are denoted by blue, squats are denoted by orange, etc.)
         self.colors = [(245,117,16), (117,245,16), (16,117,245)]
+        
+        self.bridge = CvBridge()
+        
+        # Create an OpenCV window
+        cv2.namedWindow("Exercise Detection")
+
+        print('** completed init function')
 
     # 1. Keypoints detection
     def mediapipe_detection(self,image, model):
@@ -37,11 +54,13 @@ class ExerciseDetector:
         This function detects human pose estimation keypoints from webcam footage
         
         """
+        print('** starts mediapipe_detection')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # COLOR CONVERSION BGR 2 RGB
         image.flags.writeable = False                  # Image is no longer writeable
         results = model.process(image)                 # Make prediction
         image.flags.writeable = True                   # Image is now writeable 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) # COLOR COVERSION RGB 2 BGR
+        print('** done mediapipe_detection')
         return image, results
     
     def draw_landmarks(self,image, results):
@@ -49,10 +68,12 @@ class ExerciseDetector:
         This function draws keypoints and landmarks detected by the human pose estimation model
         
         """
+        print('** start draw_landmarks')
         self.mp_drawing.draw_landmarks(image, results.pose_landmarks, self.mp_pose.POSE_CONNECTIONS,
                                     self.mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
                                     self.mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
                                     )
+        print('** done draw_landmarks')
 
     # 2. Keypoints extraction
     def extract_keypoints(self,results):
@@ -61,7 +82,9 @@ class ExerciseDetector:
         to be used as inputs for the exercise decoder models
         
         """
+        print('** start extract_keypoints')
         pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
+        print('** done extract_keypoints')
         return pose
     
     # 3. Calculate Joint Angles and Count Reps
@@ -76,9 +99,11 @@ class ExerciseDetector:
             joint: 'shoulder', 'elbow', 'wrist', 'hip', 'knee', or 'ankle'. Denotes which body joint is associated with the landmark of interest.
         
         """
+        print('** start get_coordinates')
         coord = getattr(mp_pose.PoseLandmark,side.upper()+"_"+joint.upper())
         x_coord_val = landmarks[coord.value].x
         y_coord_val = landmarks[coord.value].y
+        print('** done get_coordinates')
         return [x_coord_val, y_coord_val]    
     
     def viz_joint_angle(self,image, angle, joint):
@@ -86,10 +111,13 @@ class ExerciseDetector:
         Displays the joint angle value near the joint within the image frame
         
         """
+        print('** start viz_joint_angle')
         cv2.putText(image, str(int(angle)), 
                     tuple(np.multiply(joint, [640, 480]).astype(int)), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                             )
+        print('** done viz_joint_angle')
+        
         return
     
     def calculate_angle(self,a,b,c):
@@ -220,6 +248,8 @@ class ExerciseDetector:
         return output_frame
     
     def image_callback(self,msg):
+        
+        print('** start image_callback')
 
         sequence = []
         predictions = []
@@ -236,14 +266,37 @@ class ExerciseDetector:
         curl_stage = None
         press_stage = None
         squat_stage = None
-        bridge = CvBridge()
-        cap = bridge.imgmsg_to_cv2(msg, "bgr8")    
+        try:
+            cap = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            # Process the image (mediapipe detection, keypoints extraction, counting reps, etc.)
+        except CvBridgeError as e:
+            print(e)
+        
+        # print(cap)
+        # while(True):
+        # # Capture the video frame
+        # # by frame
+        #     # ret, frame = cap.read()
+        #     # Display the resulting frame
+        #     cv2.imshow('frame', cap)
+        #     # the 'q' button is set as the
+        #     # quitting button you may use any
+        #     # desired button of your choice
+        #     if cv2.waitKey(1) & 0xFF == ord('q'):
+        #         break
+        # # Destroy all the windows
+        # cv2.destroyAllWindows()
 
         # Video writer object that saves a video of the real time test
+        #testing
         fourcc = cv2.VideoWriter_fourcc('M','J','P','G') # video compression format
-        HEIGHT = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # webcam video frame height
-        WIDTH = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) # webcam video frame width
-        FPS = int(cap.get(cv2.CAP_PROP_FPS)) # webcam video fram rate 
+        # HEIGHT = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # webcam video frame height
+        # WIDTH = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) # webcam video frame width
+        # FPS = int(cap.get(cv2.CAP_PROP_FPS)) # webcam video fram rate 
+        #temporary set value cuz cant use cap.get
+        HEIGHT = 100
+        WIDTH = 100
+        FPS = 30
         # Videos are going to be this many frames in length
         sequence_length = FPS*1
 
@@ -251,15 +304,18 @@ class ExerciseDetector:
         actions = np.array(['curl', 'press', 'squat'])
 
         # video_name = os.path.join(os.getcwd(),f"{model_name}_real_time_test.avi")
-        video_name = os.path.join(os.getcwd(),f"LSTM_Attention_real_time_test.avi")
+        video_name = os.path.join(os.getcwd(),"LSTM_Attention_real_time_test.avi")
         out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*"MJPG"), FPS, (WIDTH,HEIGHT))
+
 
         # Set mediapipe model 
         with self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-            while cap.isOpened():
+            # while cap.isOpened():
+            while cap.all()!=0:
 
                 # Read feed
-                ret, frame = cap.read()
+                # ret, frame = cap.read()
+                frame = cap
 
                 # Make detection
                 image, results = self.mediapipe_detection(frame, pose)
@@ -304,31 +360,52 @@ class ExerciseDetector:
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                     
                 # Write to video file
-                if ret == True:
+
+                cv2.imshow('Exercise Detection', image)
+
+                # if ret == True:
+                if cap.all()!= 0:
                     out.write(image)
 
                 # Break gracefully
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
-            cap.release()
+            # cap.release()
             out.release()
             cv2.destroyAllWindows()
     
 
     def run_app(self):
+        
+        print('** start run_app')
         rospy.Subscriber("/camera/image_raw", Image, self.image_callback)
+        
+        print('** done run_app')
 
         
     def start(self):
+        
+        print('** start start')
         # Start the exercise detection app in a separate thread
         thread = Thread(target=self.run_app)
         thread.start()
+        print('** done start')
+
 
 
 if __name__ == "__main__":
-    # Provide the path to the saved TensorFlow model
-    model_path = 'models/LSTM_Attention.h5'
+    try:
+        print('** checkpoint 1')
+        # Provide the path to the saved TensorFlow model
+        model_path = 'models/LSTM_Attention.h5'
 
-    # Create an instance of ExerciseDetector and start the app
-    detector = ExerciseDetector(model_path)
-    detector.start()
+        print('** checkpoint 2')
+        # Create an instance of ExerciseDetector and start the app
+        detector = ExerciseDetector2(model_path)
+
+        print('** checkpoint 3')
+        detector.start()
+        rospy.spin()
+
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Bot Terminated")
