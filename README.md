@@ -1,9 +1,7 @@
 
 # GYM Counting Device (GYMcD)
 
-WID3005 Intelligent Robotics
-
-Semester 2 2022/2023
+University of Malaya, WID3005 Intelligent Robotics, Semester 2 2022/2023
 
 Lecturer: Dr. Zati Hakim Binti Azizul Hasan
 
@@ -27,6 +25,10 @@ The project offers to detect three kinds of posture - curl, push, and squat usin
 From a technical viewpoint, data captured from the JUNO lens is published to a rostopic to be subscribed by the AI machine learning algorithm, which then publishes the calculated results to the display node and text-to-speech node respectively. The model in this project was largely trained by its group members – minimum 150 reps per exercise in front of the camera. Beneath the hood, the pose estimation machine learning model determines the correctness of the detected posture.   
 
 We hope that GYMcD can be a considerable alternative to budget solidarity individuals who desire a propped physique without needing to hire a trainer. With that inspiration in mind, we hope GYMcD could be one of the small steps of man in the giant leap of robotics.
+
+## Project Demo 
+
+Video link: https://www.youtube.com/watch?v=yrsDZUI_-h4 
 
 ## Getting Started
 
