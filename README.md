@@ -35,7 +35,7 @@ We hope that GYMcD can be a considerable alternative to budget solidarity indivi
 
 ### Model
 - Create a folder named "models" inside of src folder.
-- Download the model from our Google Drive - (LSTM Attention.h5)[https://drive.google.com/file/d/1V4iLpShTlPDDALkrWmv_q0v3R33gB5kg/view?usp=sharing].
+- Download the model from our Google Drive - [LSTM Attention.h5](https://drive.google.com/file/d/1V4iLpShTlPDDALkrWmv_q0v3R33gB5kg/view?usp=sharing).
 - Place the LSTM Attention.h5 in the models folder.
 
 ### Installation 
@@ -87,7 +87,7 @@ source /home/mustar/cvbridge_build_ws/install/setup.bash [change to correct dire
 
 ### To Start GYMcD
 
-- Four terminals are required to run four sets of command on parallel. 
+- Four terminals are required to run four sets of commands in parallel. 
 
 1. Terminal 1
     - To clone our repo and build the project with Catkin.
