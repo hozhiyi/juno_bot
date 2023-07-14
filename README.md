@@ -31,7 +31,12 @@ We hope that GYMcD can be a considerable alternative to budget solidarity indivi
 ## Getting Started
 
 ### Prerequisites
-- Have the Juno bot with you! Our project requires Juno with vision and speech functions only. 
+- Have the Juno bot with you! Our project requires Juno with vision and speech functions only.
+
+### Model
+- Create a folder named "models" inside of src folder.
+- Download the model from our Google Drive - (LSTM Attention.h5)[https://drive.google.com/file/d/1V4iLpShTlPDDALkrWmv_q0v3R33gB5kg/view?usp=sharing].
+- Place the LSTM Attention.h5 in the models folder.
 
 ### Installation 
 
