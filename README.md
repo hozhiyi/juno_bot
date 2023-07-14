@@ -35,6 +35,13 @@ Video link: https://www.youtube.com/watch?v=yrsDZUI_-h4
 ### Prerequisites
 - Have the Juno bot with you! Our project requires Juno with vision and speech functions only.
 
+### Clone this repo
+```shell
+cd [workspace]/src
+git clone https://github.com/hozhiyi/juno_bot.git
+```
+
+
 ### Model
 - Create a folder named "models" inside of src folder.
 - Download the model from our Google Drive - [LSTM Attention.h5](https://drive.google.com/file/d/1V4iLpShTlPDDALkrWmv_q0v3R33gB5kg/view?usp=sharing).
@@ -96,19 +103,17 @@ source /home/mustar/cvbridge_build_ws/install/setup.bash [change to correct dire
 - Four terminals are required to run four sets of commands in parallel. 
 
 1. Terminal 1
-    - To clone our repo and build the project with Catkin.
+    - To build the project with Catkin and start roscore.
     ```shell
-    cd [workspace]/src
-    git clone (our github link)
     cd ..
     catkin_make
     cd src/juno_bot/src
     chmod +x *.py
+    roscore
     ```
 2. Terminal 2
-    - To start roscore and then Juno's vision to capture your exercise posture.
+    - To start Juno's vision and capture your exercise posture.
     ```shell
-    roscore
     rosrun juno_bot camera_node.py 
     ```
 3. Terminal 3
