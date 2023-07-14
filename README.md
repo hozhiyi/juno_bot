@@ -59,9 +59,13 @@ We hope that GYMcD can be a considerable alternative to budget solidarity indivi
     ```shell
     pyenv virtualenv <python_version> <environment_name>
     ```
-- Activate your virtual environment
+- Activate the python version
     ```shell
     pyenv local <environment_name>
+    ```
+- Activate the virtual environment
+    ```shell
+    pyenv activate <environment_name>
     ```
 - Install the required packages using 
     ```shell
