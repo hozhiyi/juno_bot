@@ -18,11 +18,11 @@ Group Members:
 
 Posture is a prominent factor that makes or breaks an effective gym workout, be it cardio or hypertrophy. In the case of training solo, it is often challenging to fully self-assess if a person is having the correct pose, yet not everyone can afford a personal trainer.
 
-GYMcD, being the proposed solution to the aforementioned predicament, hopes to deliver a personalised, efficient and tech-savvy experience to solo trainers. This device hopes to cover the needs of a gym assistant by capturing the real time exercises performed by the user and displaying via image and audio the current reps for each workout. Incorrect actions will not be counted into the workout to enforce integrity, just like how a human trainer would. 
+GYMcD, being the proposed solution to the aforementioned predicament, hopes to deliver a personalised, efficient, and tech-savvy experience to solo trainers. This device hopes to cover the needs of a gym assistant by capturing the real-time exercises performed by the user and displaying via image and audio the current reps for each workout. Incorrect actions will not be counted into the workout to enforce integrity, just like how a human trainer would. 
 
-The project offers to detect three kinds of posture - curl, push, and squat using a customized Posture Detection model. For each correct posture being made, Juno will count for the user and read the count out loud.
+The project offers to detect three kinds of posture - curl, push, and squat using a customized Posture Detection model built with attention-based LSTM architecture and MediaPipe Pose. For each correct posture being made, Juno will count for the user and read the count out loud.
 
-From a technical viewpoint, data captured from the JUNO lens is published to a rostopic to be subscribed by the AI machine learning algorithm, which then publishes the calculated results to the display node and text-to-speech node respectively. The model in this project was largely trained by its group members – minimum 150 reps per exercise in front of the camera. Beneath the hood, the pose estimation machine learning model determines the correctness of the detected posture.   
+From a technical viewpoint, data captured from the JUNO lens is published to a rostopic to be subscribed by the AI machine learning algorithm, which then publishes the calculated results to the display node and text-to-speech node respectively. The model in this project was largely trained by us, with a minimum of 150 reps per exercise in front of the camera. Beneath the hood, the pose estimation machine learning model determines the correctness of the detected posture.   
 
 We hope that GYMcD can be a considerable alternative to budget solidarity individuals who desire a propped physique without needing to hire a trainer. With that inspiration in mind, we hope GYMcD could be one of the small steps of man in the giant leap of robotics.
 
